@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pulse — Universal TV Remote</title>
+<meta name="theme-color" content="#1b1d22">
+<meta name="description" content="A universal Bluetooth TV remote with a slick, app-like interface.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="modal-backdrop" id="launchModal">
+  <div class="modal-card" id="modalCard"></div>
+</div>
+
+<div class="remote">
+  <div class="head">
+    <div class="brand"><b>Pulse</b>&nbsp;remote</div>
+    <div class="status" id="status" onclick="onStatusClick()">
+      <span class="dot"></span><span id="statusText">Not paired</span>
+    </div>
+  </div>
+
+  <div class="power-row">
+    <button class="power" id="powerBtn" onclick="toggleTV()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v9"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/></svg>
+    </button>
+  </div>
+
+  <div class="dpad-wrap">
+    <div class="dpad" id="dpad">
+      <div class="ring" id="ring"></div>
+      <button class="up" onclick="press(this,'up')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg></button>
+      <button class="down" onclick="press(this,'down')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <button class="left" onclick="press(this,'left')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="right" onclick="press(this,'right')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+      <div class="ok" onclick="press(this,'ok')">OK</div>
+    </div>
+  </div>
+
+  <div class="rockers">
+    <div class="rocker">
+      <button onclick="press(this,'vol+')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        VOL
+      </button>
+      <div class="div"></div>
+      <button onclick="press(this,'vol-')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14"/></svg>
+        VOL
+      </button>
+    </div>
+    <div class="rocker">
+      <button onclick="press(this,'ch+')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        CH
+      </button>
+      <div class="div"></div>
+      <button onclick="press(this,'ch-')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 12h14"/></svg>
+        CH
+      </button>
+    </div>
+  </div>
+
+  <div class="mute-row">
+    <button class="mute" id="muteBtn" onclick="toggleMute()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><line id="muteSlash" x1="23" y1="9" x2="17" y2="15" style="display:none"/><line id="muteSlash2" x1="17" y1="9" x2="23" y2="15" style="display:none"/></svg>
+      <span id="muteLabel">Mute</span>
+    </button>
+  </div>
+
+  <div class="shortcuts">
+    <div class="shortcut" onclick="launch(this,'Netflix')"><b>N</b>Netflix</div>
+    <div class="shortcut" onclick="launch(this,'YouTube')"><b>▶</b>YouTube</div>
+    <div class="shortcut" onclick="launch(this,'Input')"><b>⇄</b>Input</div>
+  </div>
+
+  <div class="bottom-row">
+    <button class="pill-btn" onclick="press(this,'back')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back
+    </button>
+    <button class="pill-btn" onclick="press(this,'home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      Home
+    </button>
+    <button class="pill-btn" onclick="toggleKeypad()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="8" y2="8"/><line x1="12" y1="8" x2="12" y2="8"/><line x1="16" y1="8" x2="16" y2="8"/></svg>
+      Keypad
+    </button>
+    <button class="pill-btn" onclick="toggleKeyboard()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="6" y1="9" x2="6" y2="9"/><line x1="10" y1="9" x2="10" y2="9"/><line x1="14" y1="9" x2="14" y2="9"/><line x1="18" y1="9" x2="18" y2="9"/><line x1="6" y1="13" x2="6" y2="13"/><line x1="10" y1="13" x2="14" y2="13"/><line x1="18" y1="13" x2="18" y2="13"/></svg>
+      Keyboard
+    </button>
+  </div>
+
+  <div class="drawer" id="drawer">
+    <div class="keypad">
+      <button onclick="press(this,'1')">1</button><button onclick="press(this,'2')">2</button><button onclick="press(this,'3')">3</button>
+      <button onclick="press(this,'4')">4</button><button onclick="press(this,'5')">5</button><button onclick="press(this,'6')">6</button>
+      <button onclick="press(this,'7')">7</button><button onclick="press(this,'8')">8</button><button onclick="press(this,'9')">9</button>
+      <button onclick="press(this,'clear')">C</button><button onclick="press(this,'0')">0</button><button onclick="press(this,'enter')">↵</button>
+    </div>
+  </div>
+
+  <div class="drawer kb" id="kbDrawer">
+    <div class="kb">
+      <input class="kb-input" id="kbInput" type="text" placeholder="Type to search…" readonly>
+      <div class="kb-row r1">
+        <button class="kb-key" onclick="kbType('q')">q</button><button class="kb-key" onclick="kbType('w')">w</button><button class="kb-key" onclick="kbType('e')">e</button><button class="kb-key" onclick="kbType('r')">r</button><button class="kb-key" onclick="kbType('t')">t</button><button class="kb-key" onclick="kbType('y')">y</button><button class="kb-key" onclick="kbType('u')">u</button><button class="kb-key" onclick="kbType('i')">i</button><button class="kb-key" onclick="kbType('o')">o</button><button class="kb-key" onclick="kbType('p')">p</button>
+      </div>
+      <div class="kb-row r2">
+        <button class="kb-key" onclick="kbType('a')">a</button><button class="kb-key" onclick="kbType('s')">s</button><button class="kb-key" onclick="kbType('d')">d</button><button class="kb-key" onclick="kbType('f')">f</button><button class="kb-key" onclick="kbType('g')">g</button><button class="kb-key" onclick="kbType('h')">h</button><button class="kb-key" onclick="kbType('j')">j</button><button class="kb-key" onclick="kbType('k')">k</button><button class="kb-key" onclick="kbType('l')">l</button>
+      </div>
+      <div class="kb-row r3">
+        <button class="kb-key wide" onclick="kbShift()">⇧</button><button class="kb-key" onclick="kbType('z')">z</button><button class="kb-key" onclick="kbType('x')">x</button><button class="kb-key" onclick="kbType('c')">c</button><button class="kb-key" onclick="kbType('v')">v</button><button class="kb-key" onclick="kbType('b')">b</button><button class="kb-key" onclick="kbType('n')">n</button><button class="kb-key" onclick="kbType('m')">m</button><button class="kb-key wide" onclick="kbBackspace()">⌫</button>
+      </div>
+      <div class="kb-row r4">
+        <button class="kb-key space" onclick="kbType(' ')">space</button>
+        <button class="kb-key enter" onclick="kbDone()">search</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
